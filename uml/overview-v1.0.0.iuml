@@ -1,0 +1,118 @@
+@startuml OuroModerno
+title "Ouro Moderno"
+
+autonumber
+
+skinparam MaxAsciiMessageLength 100
+
+actor "Content\nManager" as Admin
+actor Usuário as User
+box FPASS #b43de775
+participant WebApp as FpassWebApp
+participant API as FpassAPI
+participant Webhook as FpassWebhook
+end box
+box Ouro Moderno #17204375
+participant WebApp as OuroModernoWebApp
+participant API as OuroModernoAPI
+end box
+
+group Navegação
+User -> FpassWebApp: Acesso
+User -> FpassWebApp: Navegação de cursos
+User -> FpassWebApp: Navegação de aulas
+User -> FpassWebApp: Acesso a pré player da aula
+User -> FpassWebApp: Acesso a aula (link redirecionamento)
+FpassWebApp -> OuroModernoWebApp: Redirecionamento
+note over FpassWebApp: https://{ouroModernoWebApp}/?jwt={jwt}&returnUrl={returnUrl}&theme=fpass
+OuroModernoWebApp -> OuroModernoAPI: Verificação de credential (JWT)
+return
+User -> OuroModernoWebApp: Ação de retorno ao FPASS
+OuroModernoWebApp -> FpassWebApp: Redirecionamento\nUtilizando returnUrl (query param)
+end
+
+group Estudo
+User -> OuroModernoWebApp: Ações
+group async
+OuroModernoWebApp -> OuroModernoAPI: Visualização de página (frame)
+FpassWebhook <-- OuroModernoAPI: POST
+note right
+{
+  "eventId": "{generatedUuid}",
+  "eventType": "lesson.view",
+  "resourceId": "{lessonId}",
+  "resourceType": "lesson",
+  "timestamp": "2022-02-07T12:46:00Z"
+}
+end note
+return HTTP Code 201
+OuroModernoWebApp --> OuroModernoAPI: Avanço de página (frame)
+FpassWebhook <-- OuroModernoAPI: POST
+note right
+{
+  "eventId": "{generatedUuid}",
+  "eventType": "lesson.next",
+  "resourceId": "{lessonId}",
+  "resourceType": "lesson",
+  "parentId": "{previousLessonId}",
+  "parentType": "lesson",
+  "timestamp": "2022-02-07T12:46:00Z"
+}
+end note
+return HTTP Code 201
+OuroModernoWebApp --> OuroModernoAPI: Respondendo a questão
+FpassWebhook <-- OuroModernoAPI: POST
+note right
+{
+  "eventId": "{generatedUuid}",
+  "eventType": "form.response.create",
+  "resourceId": "{formId}",
+  "resourceType": "form",
+  "parentId": "{lessonId}",
+  "parentType": "lesson",
+  "timestamp": "2022-02-07T12:46:00Z",
+  "data": {
+    "questionHash": "{objectHash}"
+    "answerHash": "{objectHash}"
+  }
+}
+end note
+return HTTP Code 201
+OuroModernoWebApp --> OuroModernoAPI: Conclusão de curso
+FpassWebhook <-- OuroModernoAPI: POST
+note right
+{
+  "eventId": "{generatedUuid}",
+  "eventType": "form.response.create",
+  "resourceId": "{formId}",
+  "resourceType": "course",
+  "timestamp": "2022-02-07T12:46:00Z",
+  "data": {
+    "grade": 0.98
+  }
+}
+end note
+return HTTP Code 201
+end
+end
+
+group Conteúdos (curso/aula/atividade/teste)
+FpassAPI -> OuroModernoAPI: Obter dados de conteúdo
+FpassAPI -> FpassAPI: Registro de conteúdo
+group async
+OuroModernoAPI --> FpassWebhook: Atualização de conteúdo (POST)
+note right
+{
+  "eventId": "{generatedUuid}",
+  "eventType": "content.updated",
+  "resourceId": "{resourceId}",
+  "resourceType": "course | lesson | activity | form",
+  "timestamp": "2022-02-07T12:46:00Z",
+}
+end note
+FpassAPI -> FpassAPI: Atualização de conteúdo
+end
+Admin -> FpassWebApp: Gestão
+FpassWebApp -> FpassAPI
+end
+
