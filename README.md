@@ -2,7 +2,7 @@
 Definições de integração
 
 ## Overview
-![Overview](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/holding-fpass/ouromoderno/main/uml/overview-v1.0.0.iuml)
+![Overview](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/holding-fpass/ouromoderno/main/uml/overview-v1.0.1.iuml)
 
 ## Glossário
 Como forma de equiparar estruturas informacionais nos respectivos sistemas, seguem as definições:
