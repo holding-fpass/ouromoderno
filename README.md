@@ -82,7 +82,7 @@ O formato de webhook pode ser segundo o exemplo abaixo, mas não se limita esse 
 ### Exemplo de Requisição
 ```sh
 curl --location -g --request POST 'https://{webhook}' \
---header 'x-api-key: {secretUuid}' \
+--header 'authorization: {secretUuid}' \
 --header 'Content-Type: application/json' \
 --data-raw '{
   "key": "value"
