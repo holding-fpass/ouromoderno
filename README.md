@@ -92,6 +92,8 @@ curl --location -g --request POST 'https://{webhook}' \
 Response (201)
 ```json
 {
-  "timestamp": "2022-07-02T12:32:00Z"
+  "eventId": "{eventId}",
+  "message": "Event delivered",
+  "delivered": true
 }
 ```
