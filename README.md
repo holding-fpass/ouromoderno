@@ -52,7 +52,34 @@ Gerar credencial (JWT) do usuário para integração. Resp.: FPASS
   - Informação quanto a conclusão da aula por webhook. Resp.: OuroModerno
   - Emissão do certificado de conclusão do curso.: Resp.: FPASS
 
-Webhook POST - Exemplo
+## Webhook POST
+O formato de webhook pode ser segundo o exemplo abaixo, mas não se limita esse formato, sendo aberto a Ouro Moderno uma sugestão o definição própria.
+
+### Exemplo (sugestivo)
+```json
+{
+  "eventId": "{generatedUuid}",
+  "eventType": "form.response.create",
+  "resourceId": "{formId}",
+  "resourceType": "course",
+  "timestamp": "2022-02-07T12:46:00Z",
+  "data": {
+    "grade": 0.98
+  }
+}
+```
+
+## Campos do Webhook (sugestivo)
+- **eventId**: uuid v4 gerado pelo remetente
+- **eventType**: Tipificação do evento
+- **resourceId**: Identificador do recurso ao qual o evento se refere
+- **resourceType**: Tipificação do recurso
+- **timestamp**: Data da geração do evento gerada pelo remetente
+- _data_: Dados adcionais não definidos (Opcionais)
+- _parentId_: Identificador do recurso ao qual o principal pode se referenciar (Opcional)
+- _parentType_: Tipificação do recurso. (Opcional)
+
+### Exemplo de Requisição
 ```sh
 curl --location -g --request POST 'https://{webhook}' \
 --header 'x-api-key: {secretUuid}' \
